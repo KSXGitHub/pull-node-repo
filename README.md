@@ -2,7 +2,18 @@
 # pull-node-repo
 My own script to pull my own repo from GitHub to my home computer
 
+## Install
+
+### Prerequisites
+
+ * [npm](https://nodejs.org/en/download/)
+
 ## Usage
+
+### Prerequisites
+
+ * [node](https://nodejs.org/en/download/stable/) >= 5.0.0, with flag `--es-staging`
+ * [git](https://git-scm.com/download)
 
 ### Command line
 
