@@ -1,6 +1,6 @@
 
 # pull-node-repo
-
+My own script to pull my own repo from GitHub to my home computer
 
 ## Usage
 
