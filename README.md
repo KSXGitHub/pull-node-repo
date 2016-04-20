@@ -6,7 +6,7 @@ My own script to pull my own repo from GitHub to my home computer
 
 ### Prerequisites
 
- * [npm](https://nodejs.org/en/download/)
+ * [npm](https://nodejs.org/en/download/stable/)
 
 ## Usage
 
