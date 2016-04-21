@@ -20,17 +20,17 @@ const PULL_ARGS = freeze('git', freeze(['pull', 'origin', 'master']));
 const DONOTHING = () => {};
 
 var pull = (onspawn) => {
-	var createSpawner = (args) => (resolve, reject) => {
+	var createSpawner = (args, SpawnEvent) => (resolve, reject) => {
 		var childprc = spawn(...args);
-		onspawn(childprc);
+		onspawn(new SpawnEvent(childprc));
 		childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve({'childprc': childprc, 'code': code}));
 	};
 	var steps = readdirSync(REPO_DIR).map((dirname) => {
 		var currdir = `${REPO_DIR}/${dirname}`;
 		chdir(dirname);
 		return {
-			'checkout': createSpawner(CHECKOUT_ARGS),
-			'pull': createSpawner(PULL_ARGS),
+			'checkout': createSpawner(CHECKOUT_ARGS, SpawnCheckoutEvent),
+			'pull': createSpawner(PULL_ARGS, SpawnPullEvent),
 			'__proto__': null
 		};
 	});
@@ -38,4 +38,25 @@ var pull = (onspawn) => {
 	return ExtendedPromise.queue(ExtendedPromise.resolve(), ...flatten);
 };
 
-module.exports = (onspawn) => pull(_getfunc(onspawn, DONOTHING));
+function SpawnEvent(childprc) {
+	this.childprc = childprc;
+}
+SpawnEvent.prototype = {
+	'type': null,
+	'__proto__': null
+};
+
+class SpawnCheckoutEvent extends SpawnEvent {}
+SpawnCheckoutEvent.prototype.type = 'checkout';
+
+class SpawnPullEvent extends SpawnEvent {}
+SpawnPullEvent.prototype.type = 'pull';
+
+var result = (onspawn) => pull(_getfunc(onspawn, DONOTHING));
+
+Object.assign(result, {
+	'SpawnEvent': SpawnEvent,
+	'SpawnCheckoutEvent': SpawnCheckoutEvent,
+	'SpawnPullEvent': SpawnPullEvent,
+	'__proto__': null
+});
