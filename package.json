@@ -4,5 +4,8 @@
 	"version": "0.0.0",
 	"author": "Hoàng Văn Khải <hvksmr1996@gmail.com>",
 	"main": "index.js",
-	"bin": "exec.js"
+	"bin": "exec.js",
+	"dependencies": {
+		"extended-promise": ">=0.0.4 <2.0.0"
+	}
 }
