@@ -34,6 +34,8 @@ var pull = (onspawn) => {
 			'__proto__': null
 		};
 	});
+	var flatten = steps.reduce((prev, res) => [...prev, res.checkout, res.pull], []);
+	return ExtendedPromise.queue(ExtendedPromise.resolve(), ...flatten);
 };
 
 module.exports = (onspawn) => pull(_getfunc(onspawn, DONOTHING));
