@@ -20,21 +20,18 @@ const PULL_ARGS = freeze('git', freeze(['pull', 'origin', 'master']));
 const DONOTHING = () => {};
 
 var pull = (onspawn) => {
+	var createSpawner = (args) => (resolve, reject) => {
+		var childprc = spawn(...args);
+		onspawn(childprc);
+		childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve({'childprc': childprc, 'code': code}));
+	};
 	var steps = readdirSync(REPO_DIR).map((dirname) => {
 		var currdir = `${REPO_DIR}/${dirname}`;
 		chdir(dirname);
 		return {
-			checkout(resolve, reject) {
-				var childprc = spawn(...CHECKOUT_ARGS);
-				onspawn(childprc);
-				childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve({childprc: childprc, code: code}));
-			},
-			pull(resolve, reject) {
-				var childprc = spawn(...PULL_ARGS);
-				onspawn(childprc);
-				childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve({childprc: childprc, code: code}));
-			},
-			__proto__: null
+			'checkout': createSpawner(CHECKOUT_ARGS),
+			'pull': createSpawner(PULL_ARGS),
+			'__proto__': null
 		};
 	});
 };
