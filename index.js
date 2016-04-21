@@ -27,13 +27,17 @@ var pull = (onspawn, onskip) => {
 	};
 	var steps = readdirSync(REPO_DIR).map((dirname) => {
 		var currdir = `${REPO_DIR}/${dirname}`;
+		if (!statSync(`${currdir}/.git`).isDirectory()) {
+			onskip(currdir);
+			return;
+		}
 		chdir(currdir);
 		return {
 			'checkout': createSpawner(CHECKOUT_ARGS, SpawnCheckoutEvent),
 			'pull': createSpawner(PULL_ARGS, SpawnPullEvent),
 			'__proto__': null
 		};
-	});
+	}).filter(Boolean);
 	var flatten = steps.reduce((prev, res) => [...prev, res.checkout, res.pull], []);
 	return ExtendedPromise.queue(ExtendedPromise.resolve(), ...flatten);
 };
