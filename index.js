@@ -4,6 +4,7 @@
 var chdir = require('process').chdir;
 var fs = require('fs');
 var child_process = require('child_process');
+var ExtendedPromise = require('extended-promise');
 
 var freeze = Object.freeze;
 var readdirSync = fs.readdirSync;
