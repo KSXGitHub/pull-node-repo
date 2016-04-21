@@ -19,7 +19,7 @@ const CHECKOUT_ARGS = freeze('git', freeze(['checkout', 'origin', 'master']));
 const PULL_ARGS = freeze('git', freeze(['pull', 'origin', 'master']));
 const DONOTHING = () => {};
 
-var pull = (onspawn) => {
+var pull = (onspawn, onskip) => {
 	var createSpawner = (args, SpawnEvent) => (resolve, reject) => {
 		var childprc = spawn(...args);
 		onspawn(new SpawnEvent(childprc));
@@ -27,7 +27,7 @@ var pull = (onspawn) => {
 	};
 	var steps = readdirSync(REPO_DIR).map((dirname) => {
 		var currdir = `${REPO_DIR}/${dirname}`;
-		chdir(dirname);
+		chdir(currdir);
 		return {
 			'checkout': createSpawner(CHECKOUT_ARGS, SpawnCheckoutEvent),
 			'pull': createSpawner(PULL_ARGS, SpawnPullEvent),
@@ -52,7 +52,8 @@ SpawnCheckoutEvent.prototype.type = 'checkout';
 class SpawnPullEvent extends SpawnEvent {}
 SpawnPullEvent.prototype.type = 'pull';
 
-var result = (onspawn) => pull(_getfunc(onspawn, DONOTHING));
+var result = (onspawn, onskip) =>
+	pull(_getfunc(onspawn, DONOTHING), _getfunc(onskip, DONOTHING));
 
 Object.assign(result, {
 	'SpawnEvent': SpawnEvent,
