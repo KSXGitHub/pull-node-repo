@@ -29,7 +29,11 @@ var pull = (onspawn) => {
 				onspawn(childprc);
 				childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve({childprc: childprc, code: code}));
 			},
-			pull() {},
+			pull(resolve, reject) {
+				var childprc = spawn(...PULL_ARGS);
+				onspawn(childprc);
+				childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve({childprc: childprc, code: code}));
+			},
 			__proto__: null
 		};
 	});
