@@ -8,6 +8,12 @@ My own script to pull my own repo from GitHub to my home computer
 
  * [npm](https://nodejs.org/en/download/stable/)
 
+### Installation command
+
+```bash
+npm install -g KSXGitHub/pull-node-repo
+```
+
 ## Usage
 
 ### Prerequisites
