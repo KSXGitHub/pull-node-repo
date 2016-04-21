@@ -60,3 +60,5 @@ Object.assign(result, {
 	'SpawnPullEvent': SpawnPullEvent,
 	'__proto__': null
 });
+
+module.exports = result;
