@@ -1,3 +1,9 @@
+
+# General
+quick-test/*
+!quick-test/*.md
+*/temp
+
 # Logs
 logs
 *.log
