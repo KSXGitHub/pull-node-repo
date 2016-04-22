@@ -20,24 +20,22 @@ const PULL_ARGS = freeze('git', freeze(['pull', 'origin', 'master']));
 const DONOTHING = () => {};
 
 var pull = (onspawn, onskip) => {
-	var createSpawner = (args, SpawnEvent) => (prev, resolve, reject) => {
-		var childprc = spawn(...args);
+	var createSpawner = (args, cwd, SpawnEvent) => (prev, resolve, reject) => {
+		var childprc = spawn(...args, {'cwd': cwd});
 		onspawn(new SpawnEvent(childprc));
 		childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve(new SpawnerResolveValue(childprc, code, prev)));
 	};
-	var steps = readdirSync(REPO_DIR).map((dirname) => {
-		var currdir = `${REPO_DIR}/${dirname}`;
-		if (!statSync(`${currdir}/.git`).isDirectory()) {
-			onskip(currdir);
-			return;
-		}
-		chdir(currdir);
-		return {
-			'checkout': createSpawner(CHECKOUT_ARGS, SpawnCheckoutEvent),
-			'pull': createSpawner(PULL_ARGS, SpawnPullEvent),
-			'__proto__': null
-		};
-	}).filter(Boolean);
+	var steps = readdirSync(REPO_DIR)
+		.map((dirname) => `${REPO_DIR}/${dirname}`)
+		.filter((dirname) => statSync(`${dirname}/.git`).isDirectory() || void onskip(dirname))
+		.map((dirname) => {
+			return {
+				'checkout': createSpawner(CHECKOUT_ARGS, dirname, SpawnCheckoutEvent),
+				'pull': createSpawner(PULL_ARGS, dirname, SpawnPullEvent),
+				'__proto__': null
+			};
+		})
+	;
 	var flatten = steps.reduce((prev, res) => [...prev, res.checkout, res.pull], []);
 	return ExtendedPromise.queue(ExtendedPromise.resolve(), ...flatten);
 };
