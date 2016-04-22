@@ -15,15 +15,20 @@ var _getfunc = (fn, ...fnlist) =>
 	typeof fn === 'function' ? fn : _getfunc(...fnlist);
 
 const REPO_DIR = 'D:/JS_FILES/NodeJS/node_modules';
-const CHECKOUT_ARGS = freeze('git', freeze(['checkout', 'origin', 'master']));
-const PULL_ARGS = freeze('git', freeze(['pull', 'origin', 'master']));
+const CHECKOUT_ARGS = freeze(['git', freeze(['checkout', 'master'])]);
+const PULL_ARGS = freeze(['git', freeze(['pull', 'origin', 'master'])]);
 const DONOTHING = () => {};
+const THROW = (error) => {throw error};
 
-var pull = (onspawn, onskip) => {
+var pull = (onspawn, onskip, onerror) => {
 	var createSpawner = (args, dirname, SpawnEvent) => (prev, resolve, reject) => {
-		var childprc = spawn(...args, {'cwd': dirname});
-		onspawn(new SpawnEvent(childprc, dirname));
-		childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve(new SpawnerResolveValue(childprc, code, prev)));
+		try {
+			var childprc = spawn(...args, {'cwd': dirname});
+			onspawn(new SpawnEvent(childprc, dirname));
+			childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve(new SpawnerResolveValue(childprc, code, prev)));
+		} catch (error) {
+			onerror(error);
+		}
 	};
 	var fnlist = readdirSync(REPO_DIR)
 		.map((dirname) => `${REPO_DIR}/${dirname}`)
@@ -64,8 +69,8 @@ function SpawnerResolveValue(childprc, exitcode, previous) {
 	};
 }
 
-var result = (onspawn, onskip) =>
-	pull(_getfunc(onspawn, DONOTHING), _getfunc(onskip, DONOTHING));
+var result = (onspawn, onskip, onerror) =>
+	pull(_getfunc(onspawn, DONOTHING), _getfunc(onskip, DONOTHING), _getfunc(onerror, THROW));
 
 Object.assign(result, {
 	'SpawnEvent': SpawnEvent,
