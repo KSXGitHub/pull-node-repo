@@ -20,10 +20,10 @@ const PULL_ARGS = freeze('git', freeze(['pull', 'origin', 'master']));
 const DONOTHING = () => {};
 
 var pull = (onspawn, onskip) => {
-	var createSpawner = (args, SpawnEvent) => (resolve, reject) => {
+	var createSpawner = (args, SpawnEvent) => (prev, resolve, reject) => {
 		var childprc = spawn(...args);
 		onspawn(new SpawnEvent(childprc));
-		childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve({'childprc': childprc, 'code': code}));
+		childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve(new SpawnerResolveValue(childprc, code, prev)));
 	};
 	var steps = readdirSync(REPO_DIR).map((dirname) => {
 		var currdir = `${REPO_DIR}/${dirname}`;
@@ -56,6 +56,15 @@ SpawnCheckoutEvent.prototype.type = 'checkout';
 class SpawnPullEvent extends SpawnEvent {}
 SpawnPullEvent.prototype.type = 'pull';
 
+function SpawnerResolveValue(childprc, exitcode, previous) {
+	return {
+		'childprc': childprc,
+		'exitcode': exitcode,
+		'previous': previous,
+		'__proto__': this
+	};
+}
+
 var result = (onspawn, onskip) =>
 	pull(_getfunc(onspawn, DONOTHING), _getfunc(onskip, DONOTHING));
 
@@ -63,6 +72,7 @@ Object.assign(result, {
 	'SpawnEvent': SpawnEvent,
 	'SpawnCheckoutEvent': SpawnCheckoutEvent,
 	'SpawnPullEvent': SpawnPullEvent,
+	'SpawnerResolveValue': SpawnerResolveValue,
 	'__proto__': null
 });
 
