@@ -22,7 +22,7 @@ const DONOTHING = () => {};
 var pull = (onspawn, onskip) => {
 	var createSpawner = (args, cwd, SpawnEvent) => (prev, resolve, reject) => {
 		var childprc = spawn(...args, {'cwd': cwd});
-		onspawn(new SpawnEvent(childprc));
+		onspawn(new SpawnEvent(childprc, cwd));
 		childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve(new SpawnerResolveValue(childprc, code, prev)));
 	};
 	var fnlist = readdirSync(REPO_DIR)
@@ -37,8 +37,12 @@ var pull = (onspawn, onskip) => {
 	return ExtendedPromise.queue(ExtendedPromise.resolve(), ...fnlist);
 };
 
-function SpawnEvent(childprc) {
-	this.childprc = childprc;
+function SpawnEvent(childprc, dirname) {
+	return {
+		'childprc': childprc,
+		'dirname': dirname,
+		'__proto__': this
+	};
 }
 SpawnEvent.prototype = {
 	'type': null,
