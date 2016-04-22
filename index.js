@@ -25,7 +25,7 @@ var pull = (onspawn, onskip) => {
 		onspawn(new SpawnEvent(childprc));
 		childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve(new SpawnerResolveValue(childprc, code, prev)));
 	};
-	var steps = readdirSync(REPO_DIR)
+	var fnlist = readdirSync(REPO_DIR)
 		.map((dirname) => `${REPO_DIR}/${dirname}`)
 		.filter((dirname) => statSync(`${dirname}/.git`).isDirectory() || void onskip(dirname))
 		.map((dirname) => {
@@ -35,9 +35,9 @@ var pull = (onspawn, onskip) => {
 				'__proto__': null
 			};
 		})
+		.reduce((prev, res) => [...prev, res.checkout, res.pull], [])
 	;
-	var flatten = steps.reduce((prev, res) => [...prev, res.checkout, res.pull], []);
-	return ExtendedPromise.queue(ExtendedPromise.resolve(), ...flatten);
+	return ExtendedPromise.queue(ExtendedPromise.resolve(), ...fnlist);
 };
 
 function SpawnEvent(childprc) {
