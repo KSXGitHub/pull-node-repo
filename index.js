@@ -20,9 +20,9 @@ const PULL_ARGS = freeze('git', freeze(['pull', 'origin', 'master']));
 const DONOTHING = () => {};
 
 var pull = (onspawn, onskip) => {
-	var createSpawner = (args, cwd, SpawnEvent) => (prev, resolve, reject) => {
-		var childprc = spawn(...args, {'cwd': cwd});
-		onspawn(new SpawnEvent(childprc, cwd));
+	var createSpawner = (args, dirname, SpawnEvent) => (prev, resolve, reject) => {
+		var childprc = spawn(...args, {'cwd': dirname});
+		onspawn(new SpawnEvent(childprc, dirname));
 		childprc.on('exit', (code, signal) => signal ? reject(signal) : resolve(new SpawnerResolveValue(childprc, code, prev)));
 	};
 	var fnlist = readdirSync(REPO_DIR)
