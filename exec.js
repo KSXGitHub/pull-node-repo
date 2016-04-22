@@ -6,6 +6,9 @@ var process = require('process');
 
 const _x35 = '_'.repeat(35);
 
+mkhr('log', `pull-node-repo`);
+console.log(require('./package.json').description);
+
 require('.')(onspawn, onskip)
 	.onfulfill(() => mkhr('log', `COMPLETED`))
 	.onreject((reason) => mkhr('error', `FAILED`, reason))
