@@ -28,14 +28,11 @@ var pull = (onspawn, onskip) => {
 	var fnlist = readdirSync(REPO_DIR)
 		.map((dirname) => `${REPO_DIR}/${dirname}`)
 		.filter((dirname) => statSync(`${dirname}/.git`).isDirectory() || void onskip(dirname))
-		.map((dirname) => {
-			return {
-				'checkout': createSpawner(CHECKOUT_ARGS, dirname, SpawnCheckoutEvent),
-				'pull': createSpawner(PULL_ARGS, dirname, SpawnPullEvent),
-				'__proto__': null
-			};
-		})
-		.reduce((prev, res) => [...prev, res.checkout, res.pull], [])
+		.map((dirname) => [
+			createSpawner(CHECKOUT_ARGS, dirname, SpawnCheckoutEvent),
+			createSpawner(PULL_ARGS, dirname, SpawnPullEvent)
+		])
+		.reduce((prev, res) => [...prev, ...res], [])
 	;
 	return ExtendedPromise.queue(ExtendedPromise.resolve(), ...fnlist);
 };
