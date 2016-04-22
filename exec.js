@@ -4,6 +4,8 @@
 
 var process = require('process');
 
+console.log('worked');
+
 require('.')(onspawn, onskip)
 	.onfulfill(() => console.log(`COMPLETED`))
 	.onreject((reason) => console.error(`FAILED`, reason))
