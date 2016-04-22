@@ -4,21 +4,28 @@
 
 var process = require('process');
 
+const _x35 = '_'.repeat(35);
+
 require('.')(onspawn, onskip)
-	.onfulfill(() => console.log(`COMPLETED`))
-	.onreject((reason) => console.error(`FAILED`, reason))
+	.onfulfill(() => mkhr('log', `COMPLETED`))
+	.onreject((reason) => mkhr('error', `FAILED`, reason))
 ;
 
 function onspawn(event) {
-	console.log(event.type === 'checkout' ? `DIRECTORY "${event.dirname}"` : `PULLING`);
+	mkhr('log', event.type === 'checkout' ? `DIRECTORY "${event.dirname}"` : `PULLING`);
 	mkio(event.childprc);
 }
 
 function onskip(dirname) {
-	console.error(`SKIPPED "${dirname}"`);
+	mkhr('error', `SKIPPED "${dirname}"`);
 }
 
 function mkio(childprc) {
 	['stdout', 'stderr']
 		.forEach((stream) => childprc[stream].on('data', (chunk) => process[stream].write(chunk)));
+}
+
+function mkhr(mtd, ...message) {
+	console[mtd](_x35);
+	console[mtd](...message);
 }
