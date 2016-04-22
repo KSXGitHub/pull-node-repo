@@ -3,7 +3,11 @@
 'use strict';
 
 var process = require('process');
-var promise = require('.')(onspawn, onskip);
+
+require('.')(onspawn, onskip)
+	.onfulfill(() => console.log(`COMPLETED`))
+	.onreject((reason) => console.error(`FAILED`, reason))
+;
 
 function onspawn(event) {
 	console.log(event.type === 'checkout' ? `DIRECTORY "${event.dirname}"` : `PULLING`);
