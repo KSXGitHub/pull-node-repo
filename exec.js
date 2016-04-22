@@ -4,7 +4,7 @@
 
 var process = require('process');
 
-const _x35 = '_'.repeat(35);
+const _x96 = '_'.repeat(96);
 
 mkhr('log', `pull-node-repo`);
 console.log(require('./package.json').description);
@@ -29,6 +29,6 @@ function mkio(childprc) {
 }
 
 function mkhr(mtd, ...message) {
-	console[mtd](_x35);
+	console[mtd](_x96);
 	console[mtd](...message);
 }
