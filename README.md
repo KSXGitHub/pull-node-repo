@@ -24,13 +24,13 @@ npm install -g KSXGitHub/pull-node-repo
 ### Command line
 
 ```bash
-pull-node-repo <repo-name>
+pull-node-repo
 ```
 
 ### JavaScript
 
 ```javascript
-require('pull-node-repo')(REPO_NAME);
+require('pull-node-repo')();
 ```
 
 ## License
