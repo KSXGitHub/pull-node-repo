@@ -14,7 +14,7 @@ var spawn = child_process.spawn;
 var _getfunc = (fn, ...fnlist) =>
 	typeof fn === 'function' ? fn : _getfunc(...fnlist);
 
-const REPO_DIR = 'D:/JS_FILES/NodeJS/node_modules';
+const REPO_DIR = 'C:/programming/javascript/npm-packages';
 const CHECKOUT_ARGS = freeze(['git', freeze(['checkout', 'master'])]);
 const PULL_ARGS = freeze(['git', freeze(['pull', 'origin', 'master'])]);
 const DONOTHING = () => {};
